@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>行程详情</title>
+    #parse("sys/header.html")
+</head>
+<body class="gray-bg">
+<div id="rrapp" v-cloak class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox-content p-xl">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <address>
+                            <strong><abbr title="createTime">发布时间：</abbr> {{scheduling.createTime}}</strong><br>
+                            
+                        </address>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <address>
+                            <abbr title="schedulingCycle">行程周期：</abbr> {{scheduling.schedulingCycle}}<br>
+                            <abbr title="arriveTime">行程到达时间：</abbr> {{scheduling.arriveTimeS}}<br>
+                        </address>
+                    </div>
+                </div>
+
+                <div class="table-responsive m-t">
+                    <table class="table table-hover table-responsive table-bordered">
+                        <thead>
+                        <tr>
+                            <th>会员名称</th>
+                            <th>昵称</th>
+                            <th>手机号</th>
+                            <th>电子邮箱</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div><strong>{{scheduling.cjContractUsername}}</strong>
+                                </div>
+                            </td>
+                            <td>{{scheduling.cjContractNickname}}</td>
+                            <td>{{scheduling.cjContractMobile}}</td>
+                            <td>{{scheduling.cjContractEmail}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    let id = getQueryString("id");
+    var vm = new Vue({
+        el: '#rrapp',
+        data: {
+            showBtn: true,
+            scheduling: {}
+        },
+        created: function () {
+            Ajax.request({
+                url: "../scheduling/info/" + id,
+                async: true,
+                resultMsg: false,
+                successCallback: function (r) {
+                    vm.scheduling = r.scheduling;
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+
+</html>

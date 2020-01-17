@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.carpool.dao.ApiActivityMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.carpool.entitycarpool.ActivityCarpoolVo" id="activityMap">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="imUserId" column="im_user_id"/>
+        <result property="name" column="name"/>
+        <result property="date" column="date"/>
+        <result property="collect" column="collect"/>
+        <result property="imgUrl" column="img_url"/>
+        <result property="addressId" column="address_id"/>
+        <result property="describe" column="describe"/>
+    </resultMap>
+
+    <select id="queryObject" resultMap="activityMap">
+		select * from nideshop_activity where id = #{value}
+	</select>
+
+    <select id="queryList" resultMap="activityMap">
+        select * from nideshop_activity
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="startDate != null">
+                and date >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and date &lt;= #{endDate}
+            </if>
+            <if test="hotCollect != null">
+                and collect >= #{hotCollect}
+            </if>
+        </where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+		select count(*) from nideshop_activity
+		<where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="startDate != null">
+                and date >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and date &lt;= #{endDate}
+            </if>
+            <if test="hotCollect != null">
+                and collect >= #{hotCollect}
+            </if>
+        </where>
+	</select>
+	
+	<select id="queryEnrollList" resultMap="activityMap">
+        select a.* from nideshop_activity a, nideshop_user_activity ua 
+        where a.id = ua.activity_id and ua.user_id = #{userId} 
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+    <select id="queryEnrollTotal" resultType="int">
+        select count(*) from nideshop_activity a, nideshop_user_activity ua 
+        <where>
+            	and a.id = ua.activity_id and ua.user_id = #{userId}
+        </where>
+    </select>
+    
+
+    <insert id="save" parameterType="com.carpool.entitycarpool.ActivityCarpoolVo" useGeneratedKeys="true" keyProperty="id">
+		insert into nideshop_activity
+		(
+		    `user_id`,
+		    `im_user_id`,
+			`name`,
+			`date`,
+			`collect`,
+			`img_url`,
+			`address_id`,
+			`describe`,
+			`create_time`
+		)
+		values
+		(
+		    #{userId},
+		    #{imUserId},
+			#{name},
+			#{date},
+			#{collect},
+			#{imgUrl},
+			#{addressId},
+			#{describe},
+			#{createTime}
+		)
+	</insert>
+
+    <update id="update" parameterType="com.carpool.entitycarpool.ActivityCarpoolVo">
+        update nideshop_activity
+        <set>
+            <if test="userId != null">`user_id` = #{userId},</if>
+            <if test="imUserId != null">`im_user_id` = #{imUserId},</if>
+            <if test="name != null">`name` = #{name},</if>
+            <if test="date != null">`date` = #{date},</if>
+            <if test="collect != null">`collect` = #{collect},</if>
+            <if test="imgUrl != null">`img_url` = #{imgUrl},</if>
+            <if test="addressId != null">`address_id` = #{addressId},</if>
+            <if test="describe != null">`describe` = #{describe},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+		delete from nideshop_activity where id = #{value}
+	</delete>
+
+    <delete id="deleteBatch">
+        delete from nideshop_activity where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

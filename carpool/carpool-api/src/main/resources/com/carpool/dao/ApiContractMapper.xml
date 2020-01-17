@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.carpool.dao.ApiContractMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.carpool.entitycarpool.ContractCarpoolVo" id="contractMap">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="imUserId" column="im_user_id"/>
+        <result property="contractType" column="contract_type"/>
+        <result property="userType" column="user_type"/>
+        <result property="subject" column="subject"/>
+        <result property="fromAddressId" column="from_address_id"/>
+        <result property="toAddressId" column="to_address_id"/>
+        <result property="beginTime" column="begin_time"/>
+        <result property="endDate" column="end_date"/>
+        <result property="endTime" column="end_time"/>
+        <result property="contractCycle" column="contract_cycle"/>
+        <result property="weekNum" column="week_num"/>
+        <result property="remark" column="remark"/>
+        <result property="schedulingId" column="scheduling_id"/>
+        <result property="qyUserId" column="qy_user_id"/>
+        <result property="targetIMUserId" column="target_im_user_id"/>
+        <result property="markValue" column="mark_value"/>
+        <result property="evaluateRemark" column="evaluate_remark"/>
+        <result property="qyMarkValue" column="qy_mark_value"/>
+        <result property="qyEvaluateRemark" column="qy_evaluate_remark"/>
+        <result property="status" column="status"/>
+        <result property="ridingStatus" column="riding_status"/>
+        <result property="onCarTimestamp" column="on_car_timestamp"/>
+        <result property="confirmArriveTimestamp" column="confirm_arrive_timestamp"/>
+    </resultMap>
+
+    <select id="queryObject" resultMap="contractMap">
+		select * from nideshop_contract where id = #{value}
+	</select>
+
+    <select id="queryList" resultMap="contractMap">
+        select * from nideshop_contract
+        <where>
+            <if test="subject != null">
+                and subject = #{subject}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="qyUserId != null">
+                and qy_user_id = #{qyUserId}
+            </if>
+            <if test="contractType != null">
+                and contract_type = #{contractType}
+            </if>
+        </where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+    
+    <select id="queryListByUserIdORqyUserId" resultMap="contractMap">
+        select * from nideshop_contract
+        <where>
+            <if test="userId != null">
+                 and (user_id = #{userId} or qy_user_id = #{userId})
+            </if>
+            <if test="contractType != null">
+                and contract_type = #{contractType}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="status2 != null and status3 != null">
+                and (status = #{status2} or status = #{status3})
+            </if>
+        </where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+		select count(*) from nideshop_contract
+		<where>
+            <if test="userId != null">
+                 and (user_id = #{userId} or qy_user_id = #{userId})
+            </if>
+            <if test="contractType != null">
+                and contract_type = #{contractType}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+	</select>
+
+    <insert id="save" parameterType="com.carpool.entitycarpool.ContractCarpoolVo" useGeneratedKeys="true" keyProperty="id">
+		insert into nideshop_contract
+		(
+			`user_id`,
+			`im_user_id`,
+			`contract_type`,
+			`user_type`,
+			`subject`,
+			`from_address_id`,
+			`to_address_id`,
+			`begin_time`,
+			`end_date`,
+			`end_time`,
+			`contract_cycle`,
+			`week_num`,
+			`remark`,
+			`scheduling_id`,
+			`qy_user_id`,
+			`target_im_user_id`,
+			`mark_value`,
+			`qy_mark_value`,
+			`evaluate_remark`,
+			`qy_evaluate_remark`,
+			`status`,
+			`riding_status`,
+			`on_car_timestamp`,
+			`confirm_arrive_timestamp`
+		)
+		values
+		(
+			#{userId},
+			#{imUserId},
+			#{contractType},
+			#{userType},
+			#{subject},
+			#{fromAddressId},
+			#{toAddressId},
+			#{beginTime},
+			#{endDate},
+			#{endTime},
+			#{contractCycle},
+			#{weekNum},
+			#{remark},
+			#{schedulingId},
+			#{qyUserId},
+			#{targetIMUserId},
+			#{markValue},
+			#{qyMarkValue},
+			#{evaluateRemark},
+			#{qyEvaluateRemark},
+			#{status},
+			#{ridingStatus},
+			#{onCarTimestamp},
+			#{confirmArriveTimestamp}
+			
+		)
+	</insert>
+
+    <update id="update" parameterType="com.carpool.entitycarpool.ContractCarpoolVo">
+        update nideshop_contract
+        <set>
+            <if test="userId != null">`user_id` = #{userId},</if>
+            <if test="imUserId != null">`im_user_id` = #{imUserId},</if>
+            <if test="contractType != null">`contract_type` = #{contractType},</if>
+            <if test="weekNum != null">`week_num` = #{weekNum},</if>
+            <if test="userType != null">`user_type` = #{userType},</if>
+            <if test="subject != null">`subject` = #{subject},</if>
+            <if test="fromAddressId != null">`from_address_id` = #{fromAddressId},</if>
+            <if test="toAddressId != null">`to_address_id` = #{toAddressId},</if>
+            <if test="beginTime != null">`begin_time` = #{beginTime},</if>
+            <if test="endDate != null">`end_date` = #{endDate},</if>
+            <if test="endTime != null">`end_time` = #{endTime},</if>
+            <if test="contractCycle != null">`contract_cycle` = #{contractCycle},</if>
+            <if test="remark != null">`remark` = #{remark},</if>
+            <if test="schedulingId != null">`scheduling_id` = #{schedulingId},</if>
+            <if test="qyUserId != null">`qy_user_id` = #{qyUserId},</if>
+            <if test="markValue != null">`mark_value` = #{markValue},</if>
+            <if test="qyMarkValue != null">`qy_mark_value` = #{qyMarkValue},</if>
+            <if test="evaluateRemark != null">`evaluate_remark` = #{evaluateRemark},</if>
+            <if test="qyEvaluateRemark != null">`qy_evaluate_remark` = #{qyEvaluateRemark},</if>
+            <if test="status != null">`status` = #{status},</if>
+            <if test="ridingStatus != null">`riding_status` = #{ridingStatus},</if>
+            <if test="onCarTimestamp != null">`on_car_timestamp` = #{onCarTimestamp},</if>
+            <if test="confirmArriveTimestamp != null">`confirm_arrive_timestamp` = #{confirmArriveTimestamp}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+		delete from nideshop_contract where id = #{value}
+	</delete>
+
+    <delete id="deleteBatch">
+        delete from nideshop_contract where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

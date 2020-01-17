@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.carpool.dao.ApiContractWarnMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.carpool.entitycarpool.ContractWarnCarpoolVo" id="friendMap">
+        <result property="id" column="id"/>
+        <result property="contractId" column="contract_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="noticeTag" column="notice_tag"/>
+        <!-- <result property="warnTime" column="warn_time"/>
+        <result property="warnString" column="warn_string"/>
+        <result property="isWarn" column="is_warn"/>
+        <result property="canSelect" column="can_select"/> -->
+    </resultMap>
+
+    <select id="queryObject" resultMap="friendMap">
+		select * from nideshop_contract_warn where id = #{value}
+	</select>
+
+    <select id="queryList" resultMap="friendMap">
+        select * from nideshop_contract_warn
+        <where>
+            <if test="contractId != null">
+                and contract_id = #{contractId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <!-- <if test="isWarn != null">
+                and is_warn = #{isWarn}
+            </if>
+            <if test="nowTime != null">
+                and warn_time &gt;= #{nowTime}
+            </if>
+            <if test="afterTime != null">
+                and warn_time &lt;= #{afterTime}
+            </if> -->
+        </where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+		select count(*) from nideshop_contract_warn
+		<where>
+            <if test="contractId != null">
+                and contract_id = #{contractId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+	</select>
+
+    <insert id="save" parameterType="com.carpool.entitycarpool.ContractWarnCarpoolVo" useGeneratedKeys="true" keyProperty="id">
+		insert into nideshop_contract_warn
+		(
+			`contract_id`,
+			`user_id`,
+			`notice_tag`
+		)
+		values
+		(
+			#{contractId},
+			#{userId},
+			#{noticeTag}
+		)
+	</insert>
+
+    <update id="update" parameterType="com.carpool.entitycarpool.ContractWarnCarpoolVo">
+        update nideshop_contract_warn
+        <set>
+            <if test="contractId != null">`contract_id` = #{contractId},</if>
+            <if test="userId != null">`user_id` = #{userId},</if>
+            <if test="noticeTag != null">`notice_Tag` = #{noticeTag}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+		delete from nideshop_contract_warn where id = #{value}
+	</delete>
+
+    <delete id="deleteBatch">
+        delete from nideshop_contract_warn where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
